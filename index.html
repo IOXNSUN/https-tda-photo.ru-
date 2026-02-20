@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Главная — Дмитрий Тверитин{% endblock %}
+
+{% block content %}
+<section class="slider">
+  <div class="slides">
+    {% for src in slider_images %}
+      <img src="{{ src }}" alt="slide {{ loop.index }}" class="{% if loop.first %}active{% endif %}">
+    {% endfor %}
+  </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  const slides = document.querySelectorAll('.slides img');
+  let idx = 0;
+  if (!slides.length) return;
+  function showNext(){
+    slides[idx].classList.remove('active');
+    idx = (idx + 1) % slides.length;
+    slides[idx].classList.add('active');
+  }
+  setInterval(showNext, 3500);
+});
+</script>
+{% endblock %}

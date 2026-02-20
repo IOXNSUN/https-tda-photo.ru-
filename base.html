@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Дмитрий Тверитин{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@250&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="top-header">
+        <div class="logo">Дмитрий Тверитин</div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Главная</a></li>
+                <li><a href="{{ url_for('portfolio') }}">Портфолио</a></li>
+                <li><a href="{{ url_for('about') }}">Обо мне</a></li>
+                <li><a href="{{ url_for('contact') }}">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <footer class="bottom-footer">
+        <p>{{ year }} tda photo</p>
+    </footer>
+</body>
+</html>

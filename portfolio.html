@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Портфолио — Дмитрий Тверитин{% endblock %}
+
+{% block content %}
+<div class="portfolio-grid">
+    {% for genre in genres %}
+        <a href="{{ url_for('portfolio_genre', genre=genre) }}" class="portfolio-item">
+            <div class="portfolio-thumb">
+                <img src="{{ genre_images[genre] }}" alt="{{ GENRES[genre] }}">
+            </div>
+            <div class="portfolio-title">{{ GENRES[genre] }}</div>
+        </a>
+    {% endfor %}
+</div>
+{% endblock %}

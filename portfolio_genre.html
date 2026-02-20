@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Портфолио — Дмитрий Тверитин{% endblock %}
+
+{% block content %}
+<div class="portfolio-genre-container">
+    <!-- Кнопка Назад -->
+    <a href="{{ url_for('portfolio') }}" class="back-button">← Назад</a>
+
+    <!-- Сетка миниатюр -->
+    <div class="portfolio-photos-grid">
+        {% for img in images %}
+            <a href="{{ img }}" class="gallery-item">
+                <img src="{{ img }}" alt="Фото {{ loop.index }}">
+            </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Встроенные стили -->
+<style>
+/* Контейнер */
+.portfolio-genre-container {
+    max-width: 1200px;
+    margin: 18px auto;
+    padding: 0 15px;
+}
+
+/* Кнопка назад */
+.back-button {
+    display: inline-block;
+    margin-bottom: 18px;
+    padding: 8px 14px;
+    background-color: #222;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+.back-button:hover { background-color: #444; }
+
+/* Сетка миниатюр */
+.portfolio-photos-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+}
+
+/* Каждый элемент — контейнер, чтобы не ломать сетку */
+.gallery-item {
+    display: block;
+    width: 300px;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    background: #111;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .22s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.06);
+}
+
+/* Стили для SimpleLightbox - черный фон и белые стрелки */
+.sl-overlay {
+    background: #000 !important;
+    opacity: 1 !important;
+}
+
+.sl-wrapper .sl-close,
+.sl-wrapper .sl-navigation button {
+    color: #fff !important;
+    font-size: 40px !important;
+}
+
+.sl-wrapper .sl-image .sl-caption {
+    background: #000 !important;
+    color: #fff !important;
+}
+
+.sl-wrapper .sl-counter {
+    color: #fff !important;
+}
+
+/* Небольшая адаптивность */
+@media (max-width: 900px) {
+    .gallery-item { width: 45%; height: 140px; }
+}
+@media (max-width: 520px) {
+    .gallery-item { width: 100%; height: 220px; }
+}
+
+/* Fallback lightbox стили - черный фон и белые стрелки */
+#custom-lightbox {
+    display: none;
+    position: fixed;
+    z-index: 3000;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background: #000; /* Черный непрозрачный фон */
+    justify-content: center;
+    align-items: center;
+}
+#custom-lightbox img {
+    max-width: 90%;
+    max-height: 88%;
+    object-fit: contain;
+    border-radius: 6px;
+}
+#custom-lightbox .nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff; /* Белые стрелки */
+    font-size: 44px;
+    user-select: none;
+    cursor: pointer;
+    padding: 8px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#custom-lightbox .nav:hover {
+    background: rgba(255,255,255,0.2);
+}
+#custom-lightbox .nav.left { left: 20px; }
+#custom-lightbox .nav.right { right: 20px; }
+#custom-lightbox .close {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    color: #fff; /* Белый крестик */
+    font-size: 32px;
+    cursor: pointer;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#custom-lightbox .close:hover {
+    background: rgba(255,255,255,0.2);
+}
+</style>
+
+<!-- Подключаем SimpleLightbox (основное решение) -->
+<link href="https://cdn.jsdelivr.net/npm/simplelightbox@2.14.1/dist/simple-lightbox.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/simplelightbox@2.14.1/dist/simple-lightbox.min.js"></script>
+
+<!-- Инициализация + fallback -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Попытка инициализировать SimpleLightbox
+    try {
+        if (typeof SimpleLightbox === 'function') {
+            // Инициализируем. Селектор — все ссылки в гриде
+            var lightbox = new SimpleLightbox('.portfolio-photos-grid a', {
+                captions: false,
+                nav: true,
+                close: true,
+                showCounter: true,
+                overlay: true,
+                backgroundColor: '#000000'
+            });
+            return; // готово — используем SimpleLightbox
+        }
+    } catch (e) {
+        console.warn('SimpleLightbox init failed, fallback will be used.', e);
+    }
+
+    // --- FALLBACK (если SimpleLightbox не доступен) ---
+    // Создадим элемент lightbox и повесим события на миниатюры
+    var lb = document.createElement('div');
+    lb.id = 'custom-lightbox';
+    lb.style.display = 'none';
+    lb.innerHTML = '<span class="close">&#10006;</span><span class="nav left">&#10094;</span><img id="lb-img" src="" alt=""><span class="nav right">&#10095;</span>';
+    document.body.appendChild(lb);
+
+    var lbImg = lb.querySelector('#lb-img');
+    var closeBtn = lb.querySelector('.close');
+    var prevBtn = lb.querySelector('.nav.left');
+    var nextBtn = lb.querySelector('.nav.right');
+
+    var items = Array.from(document.querySelectorAll('.portfolio-photos-grid a'));
+    var current = 0;
+
+    // Отключаем переход по ссылке и показываем lb
+    items.forEach(function(a, i){
+        a.addEventListener('click', function(ev){
+            ev.preventDefault();
+            current = i;
+            lbImg.src = a.href;
+            lb.style.display = 'flex';
+        });
+    });
+
+    closeBtn.addEventListener('click', function(){ lb.style.display = 'none'; });
+    lb.addEventListener('click', function(e){
+        if (e.target === lb) lb.style.display = 'none';
+    });
+
+    prevBtn.addEventListener('click', function(ev){
+        ev.stopPropagation();
+        current = (current - 1 + items.length) % items.length;
+        lbImg.src = items[current].href;
+    });
+    nextBtn.addEventListener('click', function(ev){
+        ev.stopPropagation();
+        current = (current + 1) % items.length;
+        lbImg.src = items[current].href;
+    });
+
+    // Клавиши влево/вправо/Esc
+    document.addEventListener('keydown', function(e){
+        if (lb.style.display === 'flex') {
+            if (e.key === 'ArrowLeft') prevBtn.click();
+            if (e.key === 'ArrowRight') nextBtn.click();
+            if (e.key === 'Escape') lb.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}
