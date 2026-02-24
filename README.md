@@ -13,9 +13,6 @@
 - HTML, CSS, JS
 - SQLite (опционально)
 
-## Скриншоты
-![Скриншот 1](screenshots/screen2.jpg)
-![Скриншот 2](screenshots/screen3.jpg)
 
 ## Установка и запуск
 
